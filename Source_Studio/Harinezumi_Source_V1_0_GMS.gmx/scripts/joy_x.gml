@@ -1,7 +1,7 @@
 // joy_x(id)
 //Returns the position (from -1 to 1) of the first axis on the joystick.
 
-if(joystick_exists(0) == true)
+if(global.dip_exists == 1)
 {
 return external_call(global.ljoyAxis, argument0, 0);
 }

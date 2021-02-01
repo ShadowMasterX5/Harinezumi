@@ -172,7 +172,7 @@
                 cam_x += min(abs(cam_handle.x-border_right), 16);
              }
           // Move camera to the left.
-             if(cam_handle.x &lt; border_left &amp;&amp; cam_handle.x &gt;= (limit_top-centerX))
+             if(cam_handle.x &lt; border_left &amp;&amp; cam_handle.x &gt;= (limit_left-centerX))
              { 
                 cam_x -= min(abs(cam_handle.x-border_left), 16);
              }       

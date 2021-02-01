@@ -2,7 +2,7 @@
 //Returns true if the given button (starting at 0) was released this step.
 //  (NOTE: if joy_update is called more than once per step this can fail)
 
-if(joystick_exists(0) == true)
+if(global.dip_exists == 1)
 {
 return external_call(global.ljoyReleased, argument0, argument1);
 }

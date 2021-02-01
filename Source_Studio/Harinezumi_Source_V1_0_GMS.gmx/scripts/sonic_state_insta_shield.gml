@@ -9,7 +9,8 @@
           if(instance_exists(obj_shield_insta) == false)
           {
              shield_usable = false;
-             instance_create(x, y, obj_shield_insta);
+             t_insta       = instance_create(x, y, obj_shield_insta);
+             t_insta       . image_xscale = animation_direction;
              audio_play(_shield_use_insta, global.sfx_volume);               
           }
        }

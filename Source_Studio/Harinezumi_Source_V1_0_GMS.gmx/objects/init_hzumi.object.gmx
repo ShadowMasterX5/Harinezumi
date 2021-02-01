@@ -166,6 +166,22 @@
     global.ip_button_s = global.setting_input_button_s;
     
  // Input (Gamepad):
+    global.dip_exists = 0;
+    var gp_num = gamepad_get_device_count();
+    for(var i = 0; i &lt; gp_num; i++;)
+    {
+       if(gamepad_is_connected(i))
+       {  
+          global.dip_exists = 1;
+       }
+       else
+       {
+          if(global.dip_exists != 1)
+          {
+             global.dip_exists = 0;
+          }
+       }
+    }
     global.dip_button_a  = global.setting_input_gamepad_button_a;
     global.dip_button_b  = global.setting_input_gamepad_button_b;
     global.dip_button_s  = global.setting_input_gamepad_button_s;

@@ -236,11 +236,6 @@
           {
              // Set state.
                 state = CS_SLIDE;
-          
-             // Reset keys.
-                input_action          = false;
-                input_action_pressed  = false;
-                input_action_released = false;
           }
           else
           {

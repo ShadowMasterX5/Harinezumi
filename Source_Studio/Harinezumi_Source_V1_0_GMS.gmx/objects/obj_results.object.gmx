@@ -27,12 +27,14 @@
             <kind>1</kind>
             <string>/// Variables.
 
- // Bonuses:
-    bonus_rings = (global.crings * 100);
-    bonus_total = (0);
+ // Bonus Variables:
+    bonus_total     = 0;
+    bonus_time      = 0;
+    bonus_ring      = (global.crings * 100);
+    bonus_decrement = 100;
 
-    seconds = floor(global.game_time/1000);
-    
+ // Set the time bonus:    
+    seconds = floor(global.game_time/1000); 
     if(seconds &lt;= 29)
     {
        bonus_time   = 50000;
@@ -69,17 +71,20 @@
     {
             bonus_time   = 0;
     }
-    bonus_continue = 0;
- 
- // Reset Variables.
+
+ // Set values for skipping:    
+    bonus_skip      = bonus_ring + bonus_time;
+    bonus_current   = global.cscore;    
+    
+ // Disable checkpoint data.
     global.checkpoint_x = -1;
     global.checkpoint_y = -1;
-    global.checkpoint_t =  0;
-    
+    global.checkpoint_t =  0; 
+       
  // Allow counting:
-    can_do      = 0; 
-    can_count   = 0;
-    count_sound = 1;
+    can_do          = 0; 
+    can_count       = 0;
+    result_counting = 0;
     
  // Skip:
     can_skip = 0; 
@@ -96,12 +101,13 @@
     result_gfx_position[3]        =  global.display_width+60;
     result_gfx_position[4]        =  global.display_width+90;
     result_gfx_position_completed = false;
+
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="2" enumb="5">
+    <event eventtype="2" enumb="2">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -145,7 +151,7 @@
         </arguments>
       </action>
     </event>
-    <event eventtype="2" enumb="4">
+    <event eventtype="2" enumb="1">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -169,114 +175,16 @@
        if(go_off &gt; 0)
        {
           go_off -= 20;
-          alarm[4] = 1;
+          alarm[1] = 1;
        }
        else
        {
-          alarm[5] = 1;
+          alarm[2] = 1;
        }
     }
     else
     {
-       alarm[5] = 1; 
-    }
-
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="2" enumb="3">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Stop Counting.
-
-    can_count = 0
-
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="2" enumb="2">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Counting sounds.
- 
-    if(count_sound = 1)
-    {
-       can_skip  = 1;
-       if(audio_is_playing(_general_score_add) == 1)
-       {
-          audio_stop(_general_score_add); 
-       }   
-       audio_play(_general_score_add, global.sfx_volume);  
-       alarm[2] = 5;
-    }
-
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="2" enumb="1">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Time Bonus.
-
-    if(bonus_time &gt; 0)
-    {
-       bonus_time          -= 10;
-       bonus_total         += 10;
-       global.cscore       += 10;
-       alarm[1]             =  1;
-    }
-    else
-    {
-       bonus_time = 0;
-       alarm[1]   = -1;
+       alarm[2] = 1; 
     }
 
 </string>
@@ -301,15 +209,9 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Ring Bonus.
-    
-    if(bonus_rings &gt; 0)
-    {
-       bonus_rings         -= 10;
-       bonus_total         += 10;
-       global.cscore       += 10;
-       alarm[0]             =  1;
-    }
+            <string>/// Start counting.
+   
+    result_counting = true;
 </string>
           </argument>
         </arguments>
@@ -332,7 +234,7 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Text Positions.
+            <string>/// Text Positions &amp; Counting.
     
     if(going_out == 0)
     {
@@ -379,104 +281,93 @@
        {
           result_gfx_position_completed = true;
           
-          // Trigger Bonuses.
-             alarm[0] = 280;
-             if(bonus_time &gt; 0)
+          // Trigger counting.
+             if(result_counting == false)
              {
-                alarm[1] = 280;
-             }
-             alarm[2] = 280;
-             alarm[3] = 280;
-             alarm[4] = 30;          
-       }
-    }
-
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Finish counting bonuses.
-
-    if(can_count == 0)
-    {
-       if(bonus_rings == 0 &amp;&amp; bonus_time == 0)
-       {
-          if(can_do == 0)
-          {
-             count_sound         = 0;
-             global.crings       = 0;
-             can_do              = 1;
-             if(audio_is_playing(_general_score_total) == 1)
-             {
-                 audio_stop(_general_score_total); 
+                if(alarm[0] == -1)
+                {
+                   alarm[0] = 280;
+                   can_skip = 1;
+                }
              }   
-             audio_play(_general_score_total, global.sfx_volume);        
-          }
-          if(can_do = 1 &amp;&amp; audio_is_playing(_general_score_total) == false)
-          {
-             can_do = 2;
-          }
-          if(going_out = 0 &amp;&amp; can_do == 2)
-          {
-             if(audio_is_playing(_ev_act_clear) == false)
-             {
-                going_out = 1
-                alarm[4] = 100;
-             }
-          }
        }
-    }
+       
+       // Start counting.
+          if(result_counting == true)
+          { 
+             // Skip:
+                if((keyboard_check_pressed(global.ip_button_s) || joy_pressed(0, global.dip_button_s)) &amp;&amp; can_skip == 1)
+                {
+                   can_skip   = 0;
+                   bonus_time = 0;
+                   bonus_ring = 0;
+                   bonus_total   = bonus_skip;
+                   global.cscore = bonus_current + bonus_skip;
+                }
+                         
+             // Counting:
+                var change;
+                if(bonus_time &gt; 0)
+                {
+                   change         = min(bonus_time, bonus_decrement);
+                   bonus_time    -= change;
+                   bonus_total   += change;
+                   global.cscore += change;
+                }
+                if(bonus_ring &gt; 0)
+                {
+                   change         = min(bonus_ring, bonus_decrement);
+                   bonus_ring    -= change;
+                   bonus_total   += change;
+                   global.cscore += change;                   
+                }
+                
+             // Sounds:
+                if(bonus_ring &gt; 0 || bonus_time &gt; 0)
+                {
+                    if(audio_is_playing(_general_score_add) == 0)
+                    {
+                       audio_play(_general_score_add, global.sfx_volume); 
+                    }                         
+                }
+                
+             // Finish:
+                if(not(bonus_ring &gt; 0 || bonus_time &gt; 0))
+                {
+                   // Stop Sound:
+                      if(audio_is_playing(_general_score_add) == 1)
+                      {
+                         audio_stop(_general_score_add)
+                      }
+                      
+                   // Finish up:
+                      if(can_do == 0)
+                      {
+                         count_sound   = 0;
+                         global.crings = 0;
+                         can_do              = 1;
+                         if(audio_is_playing(_general_score_total) == 1)
+                         {
+                             audio_stop(_general_score_total); 
+                         }   
+                         audio_play(_general_score_total, global.sfx_volume);        
+                      }
+                      if(can_do = 1 &amp;&amp; audio_is_playing(_general_score_total) == false)
+                      {
+                         can_do = 2;
+                      }
+                      if(going_out = 0 &amp;&amp; can_do == 2)
+                      {
+                         if(audio_is_playing(_ev_act_clear) == false)
+                         {
+                            going_out = 1
+                            alarm[1] = 100;
+                         }
+                      }                   
+                }
+          } 
+    }       
 
-    
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Skip counting.
-
-    if((keyboard_check_pressed(global.ip_button_s) || joy_pressed(0, global.dip_button_s)) &amp;&amp; can_skip == 1)
-    {
-       bonus_total        += bonus_time + bonus_rings;
-       bonus_time          =  0;      
-       bonus_rings         =  0;      
-       alarm[0]            = -1;
-       alarm[1]            = -1;  
-       alarm[3]            =  1; 
-       can_skip            =  0;
-       global.cscore += bonus_total;      
-    }
 </string>
           </argument>
         </arguments>
@@ -525,7 +416,7 @@
     draw_sprite(spr_results_bg, 0, view_xview+220+28+result_gfx_position[2], view_yview+122);  
     draw_number_zero(view_xview+283+28+9+result_gfx_position[2], view_yview+120,''+ string(bonus_time),  0);
     draw_sprite(spr_results_bg, 0, view_xview+220+28+result_gfx_position[3], view_yview+138);     
-    draw_number_zero(view_xview+283+28+9+result_gfx_position[3], view_yview+136,''+ string(bonus_rings), 0);
+    draw_number_zero(view_xview+283+28+9+result_gfx_position[3], view_yview+136,''+ string(bonus_ring), 0);
     draw_sprite(spr_results_bg, 0, view_xview+220+28+result_gfx_position[4], view_yview+194);      
     draw_number_zero(view_xview+283+28+9+result_gfx_position[4], view_yview+192,    string(bonus_total), 0);
     

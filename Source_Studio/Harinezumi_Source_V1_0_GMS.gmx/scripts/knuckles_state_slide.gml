@@ -37,7 +37,17 @@
           { 
                   x_speed = min(x_speed+0.125, 0);
           }
- 
+          
+       // Come to halt when you no longer hold the jump button. 
+          if(!input_action)
+          {
+             if(abs(x_speed) > 0)
+             {
+                x_speed         = 0;
+                animation_frame = 3;
+             }        
+          }
+           
        // Animation.
           if(floor(animation_frame) < 3)
           {

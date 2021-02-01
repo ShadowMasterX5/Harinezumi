@@ -2,7 +2,7 @@
  // Check for input.
  
  // Default:
-    if(joystick_exists(0) == true)
+    if(global.dip_exists == 1)
     {
     
        // Key held.   

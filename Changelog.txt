@@ -1,3 +1,18 @@
+HZ v1.1 (01.02.2020) Changes:
+----------------------------------
+
+#ADDED:
+- Nothing.
+
+#FIXED:
+- Fixed a mistake in the Camera code which was checking the top limit instead of the left limit.
+- Fixed the Insta-Shield sprite direction. It now faces in the same direction as the character when executed.
+
+#CHANGED:
+- Results/Score tally has been rewritten, special thanks to VectorSatyr.
+- Changed the Slide behaviour to be more like the original game. (Slide as long as you hold the jump button.)
+- Changed the gamepad connection check to check every 5 seconds if a controller is connected or disconnected. This should hopefully fix performance issues.
+
 HZ v1.0P (Public Release) Changes:
 ----------------------------------
 
